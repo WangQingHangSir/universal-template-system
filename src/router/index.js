@@ -1,8 +1,14 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHashHistory
+} from 'vue-router'
 
-const routes = [
-
-]
+// 共有路由
+const routes = [{
+  path: '/login',
+  name: 'login',
+  component: () => import('../views/login/index.vue')
+}]
 
 const router = createRouter({
   history: createWebHashHistory(),
