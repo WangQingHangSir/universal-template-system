@@ -31,10 +31,7 @@
           </el-icon>
         </span>
       </el-form-item>
-      <el-button
-        class="login-button"
-        type="primary"
-        @click="handleLoginSubmit(LoginForm)"
+      <el-button class="login-button" type="primary" @click="handleLoginSubmit"
         >登录</el-button
       >
     </el-form>
@@ -44,8 +41,11 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { validatePassword } from './rule'
-
+import User from '../../api/user.js'
+import md5 from 'md5'
+import util from '../../utils/util.js'
 const inputType = ref('password')
+const LoginForm = ref()
 
 const loginForm = reactive({
   username: 'admin',
@@ -57,7 +57,7 @@ const loginRules = reactive({
     {
       required: true,
       trigger: 'blur',
-      message: '用户名为必填项'
+      message: '请输入用户名'
     }
   ],
   password: [
@@ -73,11 +73,18 @@ const passwordIconStatus = computed(() => {
   return inputType.value === 'password' ? 'eye' : 'eye-open'
 })
 
-const handleLoginSubmit = async (formName) => {
-  if (!formName) return
-  await formName.validate((valid) => {
+// 登录
+const handleLoginSubmit = async () => {
+  if (!LoginForm.value) return
+  await LoginForm.value.validate(async (valid) => {
     if (valid) {
-      alert('登录')
+      const newLoginForm = util.deepCopy(loginForm)
+      newLoginForm.password = '123'
+      console.log(newLoginForm)
+      console.log(loginForm)
+      newLoginForm.password = md5(newLoginForm.password)
+      const response = await User.getUserInfo(newLoginForm)
+      console.log(response)
     }
   })
 }
