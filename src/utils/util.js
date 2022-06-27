@@ -1,49 +1,38 @@
-/**
- * 检测数据类型方法
- * @param {*} data
- * @returns
- */
-const checkDataType = (data) => {
+// 检测数据类型
+const getDataType = (data) => {
   const dataType = Object.prototype.toString.call(data)
-  const dataTypeOptions = {
-    '[object Boolean]': 'boolean',
-    '[object Number]': 'number',
-    '[object String]': 'string',
+  const mapType = {
     '[object Function]': 'function',
+    '[object Object]': 'object',
     '[object Array]': 'array',
+    '[object String]': 'string',
+    '[object Number]': 'number',
+    '[object Undefined]': 'undefind',
     '[object Date]': 'date',
-    '[object RegExp]': 'regExp',
-    '[object Undefined]': 'undefined',
+    '[object RegExp]': 'regexp',
     '[object Null]': 'null',
-    '[object Object]': 'object'
+    '[object Boolean]': 'boolean'
   }
-  return dataTypeOptions[dataType]
+  return mapType[dataType]
 }
-
-/**
- * 深拷贝
- * @param {*} data
- * @returns
- */
 const deepCopy = (data) => {
-  const type = checkDataType(data)
-  let params = null
-  if (type === 'array') {
-    params = []
+  let obj = null
+  const str = getDataType(data)
+  if (str === 'array') {
+    obj = []
     for (let i = 0; i < data.length; i++) {
-      params.push(deepCopy(data[i]))
+      obj.push(deepCopy(data[i]))
     }
-  } else if (type === 'object') {
-    params = {}
+  } else if (str === 'object') {
+    obj = {}
     for (const i in data) {
-      params[i] = deepCopy(data[i])
+      obj[i] = deepCopy(data[i])
     }
   } else {
     return data
   }
-  return params
+  return obj
 }
-
 export default {
   deepCopy
 }
