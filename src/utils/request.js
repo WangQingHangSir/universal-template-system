@@ -3,7 +3,7 @@ import axios from 'axios'
 import md5 from 'md5'
 
 import loading from './loading'
-
+import store from '../store'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
@@ -18,6 +18,10 @@ service.interceptors.request.use(
     config.headers.icode = icode
     config.headers.codeType = time
     // 在请求发送之前做一些事情
+    const token = store.getters.token
+    console.log(token)
+    if (token) config.headers.Authorization = 'Bearer ' + token
+
     return config
   },
   function (error) {
@@ -31,6 +35,7 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   function (response) {
+    console.log(response)
     // 关闭loading
     loading.close()
     // 对响应数据执行操作

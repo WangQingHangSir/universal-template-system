@@ -41,17 +41,19 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { validatePassword } from './rule'
-import User from '../../api/user.js'
+// import User from '../../api/user.js'
 import md5 from 'md5'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import util from '../../utils/util.js'
+const store = useStore()
+const router = useRouter()
 const inputType = ref('password')
 const LoginForm = ref()
-
 const loginForm = reactive({
   username: 'admin',
   password: '123456'
 })
-
 const loginRules = reactive({
   username: [
     {
@@ -68,27 +70,22 @@ const loginRules = reactive({
     }
   ]
 })
-
 const passwordIconStatus = computed(() => {
   return inputType.value === 'password' ? 'eye' : 'eye-open'
 })
-
 // 登录
 const handleLoginSubmit = async () => {
   if (!LoginForm.value) return
   await LoginForm.value.validate(async (valid) => {
     if (valid) {
       const newLoginForm = util.deepCopy(loginForm)
-      newLoginForm.password = '123'
-      console.log(newLoginForm)
-      console.log(loginForm)
       newLoginForm.password = md5(newLoginForm.password)
-      const response = await User.getUserInfo(newLoginForm)
-      console.log(response)
+      const response = await store.dispatch('user/login', newLoginForm)
+      console.log(response.data.data.token)
+      if (response.data.data.token) router.push('/')
     }
   })
 }
-
 const handllePassWordStatus = () => {
   inputType.value = inputType.value === 'password' ? 'text' : 'password'
 }
@@ -99,12 +96,10 @@ $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 $cursor: #fff;
-
 .login-container {
   position: relative;
   height: 100%;
   background-color: $bg;
-
   .login-form {
     width: 520px;
     padding: 0 35px;
@@ -113,20 +108,17 @@ $cursor: #fff;
     margin-left: -260px;
     top: 160px;
     overflow: hidden;
-
     ::v-deep .el-form-item {
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(0, 0, 0, 0.1);
       border-radius: 5px;
       color: #454545;
-
       .svg-container {
         padding: 6px 5px 6px 15px;
         color: $dark_gray;
         vertical-align: middle;
         display: inline-block;
       }
-
       .svg-pwd {
         position: absolute;
         right: 20px;
@@ -137,7 +129,6 @@ $cursor: #fff;
         user-select: none;
       }
     }
-
     ::v-deep .el-input {
       display: inline-block;
       height: 47px;
@@ -159,10 +150,8 @@ $cursor: #fff;
         caret-color: $cursor;
       }
     }
-
     .title-container {
       position: relative;
-
       .title {
         font-size: 24px;
         color: $light_gray;
@@ -181,7 +170,6 @@ $cursor: #fff;
         cursor: pointer;
       }
     }
-
     .login-button {
       width: 100%;
       margin-bottom: 30px;
